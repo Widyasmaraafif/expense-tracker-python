@@ -31,9 +31,15 @@ def add_transaction():
         messagebox.showwarning("Error", "Input tidak lengkap")
         return
 
+    try:
+        amount = int(amount)
+    except ValueError:
+        messagebox.showerror("Error", "Nominal harus angka")
+        return
+
     transaction = {
         "title": title,
-        "amount": int(amount),
+        "amount": amount,
         "type": t_type,
         "date": datetime.now().strftime("%Y-%m-%d %H:%M")
     }
@@ -45,6 +51,23 @@ def add_transaction():
     title_entry.delete(0, tk.END)
     amount_entry.delete(0, tk.END)
 
+def delete_transaction():
+    selected = listbox.curselection()
+    if not selected:
+        messagebox.showwarning("Error", "Pilih transaksi yang ingin dihapus")
+        return
+
+    index = selected[0]
+    confirm = messagebox.askyesno(
+        "Konfirmasi",
+        "Yakin ingin menghapus transaksi ini?"
+    )
+
+    if confirm:
+        data.pop(index)
+        save_data(data)
+        refresh_list()
+
 def refresh_list():
     listbox.delete(0, tk.END)
     for t in data:
@@ -55,30 +78,33 @@ def refresh_list():
         )
     balance_label.config(text=f"Saldo: Rp {calculate_balance(data)}")
 
+# Load data
 data = load_data()
 
+# GUI
 root = tk.Tk()
 root.title("Expense Tracker")
+root.geometry("420x480")
 
-# UI
 tk.Label(root, text="Judul").pack()
 title_entry = tk.Entry(root)
-title_entry.pack()
+title_entry.pack(fill="x", padx=20)
 
 tk.Label(root, text="Nominal").pack()
 amount_entry = tk.Entry(root)
-amount_entry.pack()
+amount_entry.pack(fill="x", padx=20)
 
 type_var = tk.StringVar(value="expense")
 tk.Radiobutton(root, text="Pengeluaran", variable=type_var, value="expense").pack()
 tk.Radiobutton(root, text="Pemasukan", variable=type_var, value="income").pack()
 
 tk.Button(root, text="Tambah", command=add_transaction).pack(pady=5)
+tk.Button(root, text="Hapus Terpilih", command=delete_transaction).pack(pady=5)
 
-listbox = tk.Listbox(root, width=50)
+listbox = tk.Listbox(root, width=55)
 listbox.pack(pady=10)
 
-balance_label = tk.Label(root, text="Saldo: Rp 0")
+balance_label = tk.Label(root, text="Saldo: Rp 0", font=("Arial", 10, "bold"))
 balance_label.pack()
 
 refresh_list()

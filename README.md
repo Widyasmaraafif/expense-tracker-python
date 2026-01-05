@@ -8,6 +8,7 @@ Designed for Windows users.
 ## Features
 
 - Add income and expense transactions
+- Delete selected transaction list with date & type
 - Display transaction list
 - Automatic balance calculation
 - Local JSON storage (offline)
