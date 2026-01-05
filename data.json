@@ -1,8 +1,14 @@
 [
   {
     "title": "Gaji",
-    "amount": 1400000,
+    "amount": 1300000,
     "type": "income",
     "date": "2026-01-03 22:05"
+  },
+  {
+    "title": "jajan",
+    "amount": 200000,
+    "type": "expense",
+    "date": "2026-01-05 21:07"
   }
 ]

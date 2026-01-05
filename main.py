@@ -3,6 +3,7 @@ from tkinter import messagebox
 import json
 import os
 from datetime import datetime
+import csv
 
 DATA_FILE = "data.json"
 selected_index = None
@@ -124,6 +125,21 @@ def clear_input():
     amount_entry.delete(0, tk.END)
     type_var.set("expense")
 
+def export_csv():
+    if not data:
+        messagebox.showwarning("Error", "Tidak ada data untuk diekspor")
+        return
+
+    with open("transactions.csv", "w", newline='') as csvfile:
+        fieldnames = ["date", "title", "amount", "type"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for t in data:
+            writer.writerow(t)
+
+    messagebox.showinfo("Sukses", "Data berhasil diekspor ke transactions.csv")
+
 # Load data
 data = load_data()
 
@@ -148,6 +164,7 @@ tk.Button(root, text="Tambah", command=add_transaction).pack(pady=3)
 tk.Button(root, text="Edit Terpilih", command=edit_transaction).pack(pady=3)
 tk.Button(root, text="Update", command=update_transaction).pack(pady=3)
 tk.Button(root, text="Hapus Terpilih", command=delete_transaction).pack(pady=3)
+tk.Button(root, text="Export CSV", command=export_csv).pack(pady=3)
 
 listbox = tk.Listbox(root, width=60)
 listbox.pack(pady=10)
