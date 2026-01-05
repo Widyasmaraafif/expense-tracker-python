@@ -12,6 +12,8 @@ Designed for Windows users.
 - Edit existing transaction
 - Export transactions to CSV
 - Filter transactions (All / Income / Expense)
+- Mothly Summary
+- Add Category
 - Display transaction list
 - Automatic balance calculation
 - Local JSON storage (offline)
