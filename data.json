@@ -10,5 +10,11 @@
     "amount": 200000,
     "type": "expense",
     "date": "2026-01-05 21:07"
+  },
+  {
+    "title": "Jas Hujan",
+    "amount": 100000,
+    "type": "expense",
+    "date": "2026-01-05 21:23"
   }
 ]

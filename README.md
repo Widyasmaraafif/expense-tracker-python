@@ -10,6 +10,8 @@ Designed for Windows users.
 - Add income and expense transactions
 - Delete selected transaction list with date & type
 - Edit existing transaction
+- Export transactions to CSV
+- Filter transactions (All / Income / Expense)
 - Display transaction list
 - Automatic balance calculation
 - Local JSON storage (offline)
@@ -81,6 +83,7 @@ expense-tracker-python/
 ## Notes
 
 - All data is stored locally in data.json
+- Exported CSV files are generated locally and not tracked by Git
 - No internet connection required
 - Works offline on Windows
 

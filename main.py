@@ -26,13 +26,20 @@ def calculate_balance(data):
 
 def refresh_list():
     listbox.delete(0, tk.END)
-    for t in data:
+
+    filtered_data = data
+    if filter_var.get() != "all":
+        filtered_data = [t for t in data if t["type"] == filter_var.get()]
+
+    for t in filtered_data:
         sign = "+" if t["type"] == "income" else "-"
         listbox.insert(
             tk.END,
             f'{t["date"]} | {t["title"]} | {sign}{t["amount"]}'
         )
+
     balance_label.config(text=f"Saldo: Rp {calculate_balance(data)}")
+
 
 def add_transaction():
     title = title_entry.get()
@@ -157,6 +164,7 @@ amount_entry = tk.Entry(root)
 amount_entry.pack(fill="x", padx=20)
 
 type_var = tk.StringVar(value="expense")
+filter_var = tk.StringVar(value="all")
 tk.Radiobutton(root, text="Pengeluaran", variable=type_var, value="expense").pack()
 tk.Radiobutton(root, text="Pemasukan", variable=type_var, value="income").pack()
 
@@ -166,6 +174,15 @@ tk.Button(root, text="Update", command=update_transaction).pack(pady=3)
 tk.Button(root, text="Hapus Terpilih", command=delete_transaction).pack(pady=3)
 tk.Button(root, text="Export CSV", command=export_csv).pack(pady=3)
 
+tk.Label(root, text="Filter").pack()
+tk.OptionMenu(
+    root,
+    filter_var,
+    "all",
+    "income",
+    "expense",
+    command=lambda _: refresh_list()
+).pack(pady=3)
 listbox = tk.Listbox(root, width=60)
 listbox.pack(pady=10)
 
