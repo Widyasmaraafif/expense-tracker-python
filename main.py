@@ -4,6 +4,7 @@ import json
 import os
 from datetime import datetime
 import csv
+import matplotlib.pyplot as plt
 
 DATA_FILE = "data.json"
 selected_index = None
@@ -201,6 +202,39 @@ def calculate_category_summary(data):
 
     return summary
 
+def get_category_expense_data():
+    summary = {}
+
+    for t in data:
+        if t["type"] != "expense":
+            continue
+
+        cat = t.get("category", "Other")
+        summary[cat] = summary.get(cat, 0) + t["amount"]
+
+    return summary
+
+def show_category_pie_chart():
+    summary = get_category_expense_data()
+
+    if not summary:
+        messagebox.showinfo("Info", "Belum ada data pengeluaran")
+        return
+
+    labels = list(summary.keys())
+    values = list(summary.values())
+
+    plt.figure(figsize=(6, 6))
+    plt.pie(
+        values,
+        labels=labels,
+        autopct="%1.1f%%",
+        startangle=140
+    )
+    plt.title("Pengeluaran per Kategori")
+    plt.axis("equal")
+    plt.show()
+
 # ===================== INIT =====================
 
 init_data_file()
@@ -244,6 +278,7 @@ tk.Button(btns, text="Edit", command=edit_transaction).pack(side="left", padx=3)
 tk.Button(btns, text="Update", command=update_transaction).pack(side="left", padx=3)
 tk.Button(btns, text="Hapus", command=delete_transaction).pack(side="left", padx=3)
 tk.Button(btns, text="Export CSV", command=export_csv).pack(side="left", padx=3)
+tk.Button(btns, text="Pie Chart", command=show_category_pie_chart).pack(side="left", padx=3)
 
 # ===================== LIST =====================
 

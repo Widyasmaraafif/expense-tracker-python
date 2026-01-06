@@ -20,6 +20,10 @@ Designed for Windows users.
 - Local JSON storage (offline)
 - Desktop GUI (no browser required)
 
+## Visualization
+
+This application includes a pie chart visualization to show expense distribution by category using Matplotlib.
+
 ## Tech Stack
 
 - Python 3
