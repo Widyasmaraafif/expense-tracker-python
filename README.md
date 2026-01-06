@@ -12,6 +12,7 @@ Designed for Windows users.
 - Edit existing transaction
 - Export transactions to CSV
 - Filter transactions (All / Income / Expense)
+- Search transactions
 - Mothly Summary
 - Category Summary
 - Add Category

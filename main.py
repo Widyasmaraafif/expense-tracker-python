@@ -55,9 +55,22 @@ def calculate_monthly_summary(data, month, year):
 def refresh_list():
     listbox.delete(0, tk.END)
 
+    keyword = search_var.get().lower()
+
     filtered = data
+
+    # Filter type
     if filter_var.get() != "all":
-        filtered = [t for t in data if t["type"] == filter_var.get()]
+        filtered = [t for t in filtered if t["type"] == filter_var.get()]
+
+    # Filter search
+    if keyword:
+        filtered = [
+            t for t in filtered
+            if keyword in t["title"].lower()
+            or keyword in t.get("category", "").lower()
+            or keyword in str(t["amount"])
+        ]
 
     for t in filtered:
         sign = "+" if t["type"] == "income" else "-"
@@ -280,9 +293,22 @@ tk.Button(btns, text="Hapus", command=delete_transaction).pack(side="left", padx
 tk.Button(btns, text="Export CSV", command=export_csv).pack(side="left", padx=3)
 tk.Button(btns, text="Pie Chart", command=show_category_pie_chart).pack(side="left", padx=3)
 
-# ===================== LIST =====================
+# ===================== SEARCH & FILTER =====================
 
 filter_var = tk.StringVar(value="all")
+search_var = tk.StringVar()
+
+# ===================== SEARCH =====================
+
+tk.Label(main, text="Cari Transaksi").pack(anchor="w")
+
+search_entry = tk.Entry(main, textvariable=search_var)
+search_entry.pack(fill="x", pady=(0, 5))
+
+search_entry.bind("<KeyRelease>", lambda e: refresh_list())
+
+# ===================== LIST =====================
+
 tk.OptionMenu(main, filter_var, "all", "income", "expense", command=lambda _: refresh_list()).pack()
 
 list_frame = tk.Frame(main)
