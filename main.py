@@ -68,6 +68,7 @@ def refresh_list():
 
     balance_label.config(text=f"Saldo: Rp {calculate_balance(data)}")
     update_monthly_summary()
+    update_category_summary()
 
 def update_monthly_summary():
     month = int(month_var.get())
@@ -77,6 +78,23 @@ def update_monthly_summary():
     monthly_income_label.config(text=f"Pemasukan: Rp {income}")
     monthly_expense_label.config(text=f"Pengeluaran: Rp {expense}")
     monthly_balance_label.config(text=f"Saldo Bulan Ini: Rp {balance}")
+
+def update_category_summary():
+    for widget in category_frame.winfo_children():
+        widget.destroy()
+
+    summary = calculate_category_summary(data)
+
+    if not summary:
+        tk.Label(category_frame, text="Belum ada data").pack(anchor="w")
+        return
+
+    for cat, total in summary.items():
+        tk.Label(
+            category_frame,
+            text=f"{cat:<15} : Rp {total}",
+            anchor="w"
+        ).pack(fill="x")
 
 def clear_input():
     title_entry.delete(0, tk.END)
@@ -171,6 +189,18 @@ def export_csv():
 
     messagebox.showinfo("Sukses", "Export berhasil")
 
+def calculate_category_summary(data):
+    summary = {}
+
+    for t in data:
+        if t["type"] != "expense":
+            continue
+
+        category = t.get("category", "Other")
+        summary[category] = summary.get(category, 0) + t["amount"]
+
+    return summary
+
 # ===================== INIT =====================
 
 init_data_file()
@@ -252,6 +282,13 @@ monthly_expense_label.pack(anchor="w")
 
 monthly_balance_label = tk.Label(summary, font=("Arial", 9, "bold"))
 monthly_balance_label.pack(anchor="w")
+
+# ================= Category Summary =================
+tk.Label(summary, text="Per Kategori", font=("Arial", 9, "bold")).pack(anchor="w", pady=(8, 3))
+
+category_frame = tk.Frame(summary)
+category_frame.pack(fill="x")
+
 
 refresh_list()
 root.mainloop()

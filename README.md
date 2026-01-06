@@ -13,6 +13,7 @@ Designed for Windows users.
 - Export transactions to CSV
 - Filter transactions (All / Income / Expense)
 - Mothly Summary
+- Category Summary
 - Add Category
 - Display transaction list
 - Automatic balance calculation
