@@ -2,53 +2,51 @@ from datetime import datetime
 from collections import defaultdict
 
 
+DATE_FORMATS = [
+    "%Y-%m-%d %H:%M",
+    "%Y-%m-%d"
+]
+
+
+def parse_date(date_str):
+    for fmt in DATE_FORMATS:
+        try:
+            return datetime.strptime(date_str, fmt)
+        except ValueError:
+            continue
+    raise ValueError(f"Format tanggal tidak dikenali: {date_str}")
+
+
 def calculate_balance(data):
-    """
-    Hitung total saldo keseluruhan
-    """
     balance = 0
     for t in data:
-        if t["type"] == "income":
-            balance += t["amount"]
-        else:
-            balance -= t["amount"]
+        balance += t["amount"] if t["type"] == "income" else -t["amount"]
     return balance
 
 
-def monthly_summary(data, month, year):
-    """
-    Hitung income, expense, balance per bulan
-    """
+def calculate_monthly_summary(data, month, year):
     income = 0
     expense = 0
 
     for t in data:
-        date = datetime.strptime(t["date"], "%Y-%m-%d")
+        date = parse_date(t["date"])
         if date.month == month and date.year == year:
             if t["type"] == "income":
                 income += t["amount"]
             else:
                 expense += t["amount"]
 
-    return {
-        "income": income,
-        "expense": expense,
-        "balance": income - expense
-    }
+    return income, expense, income - expense
 
 
-def category_summary(data, month=None, year=None):
-    """
-    Ringkasan expense per kategori
-    Bisa global atau per bulan
-    """
+def calculate_category_summary(data, month=None, year=None):
     summary = defaultdict(int)
 
     for t in data:
         if t["type"] != "expense":
             continue
 
-        date = datetime.strptime(t["date"], "%Y-%m-%d")
+        date = parse_date(t["date"])
 
         if month and year:
             if date.month != month or date.year != year:

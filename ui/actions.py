@@ -74,7 +74,7 @@ def add_transaction(ctx):
         "amount": amount,
         "type": ctx["type_var"].get(),
         "category": ctx["category_var"].get(),
-        "date": datetime.now().strftime("%Y-%m-%d")
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M")
     })
 
     ctx["save_data"](ctx["data"])
