@@ -19,3 +19,4 @@ Thumbs.db
 # Data files
 *.json
 *.csv
+main_lama.py
