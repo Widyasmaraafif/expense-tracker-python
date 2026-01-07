@@ -1,6 +1,8 @@
 import csv
 from datetime import datetime
 from tkinter import messagebox
+import matplotlib.pyplot as plt
+from core.calculator import calculate_category_summary
 
 
 # ===================== STATE =====================
@@ -81,7 +83,6 @@ def add_transaction(ctx):
     refresh_list(ctx)
     clear_input(ctx)
 
-
 def edit_transaction(ctx):
     global selected_index
 
@@ -150,3 +151,20 @@ def export_csv(ctx):
             writer.writerow(t)
 
     messagebox.showinfo("Sukses", "Export CSV berhasil")
+
+def show_category_pie_chart(ctx):
+    data = ctx["data"]
+
+    summary = calculate_category_summary(data)
+    if not summary:
+        messagebox.showinfo("Info", "Belum ada data pengeluaran")
+        return
+
+    labels = list(summary.keys())
+    values = list(summary.values())
+
+    plt.figure(figsize=(6, 6))
+    plt.pie(values, labels=labels, autopct="%1.1f%%", startangle=140)
+    plt.title("Pengeluaran per Kategori")
+    plt.axis("equal")
+    plt.show()

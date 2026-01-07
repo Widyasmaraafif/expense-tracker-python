@@ -29,14 +29,18 @@ def calculate_monthly_summary(data, month, year):
     expense = 0
 
     for t in data:
-        date = parse_date(t["date"])
+        date = parse_date(t["date"])   # pakai helper kalau ada
         if date.month == month and date.year == year:
             if t["type"] == "income":
                 income += t["amount"]
             else:
                 expense += t["amount"]
 
-    return income, expense, income - expense
+    return {
+        "income": income,
+        "expense": expense,
+        "balance": income - expense
+    }
 
 
 def calculate_category_summary(data, month=None, year=None):

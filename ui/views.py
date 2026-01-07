@@ -8,6 +8,7 @@ from ui.actions import (
     update_transaction,
     delete_transaction,
     export_csv,
+    show_category_pie_chart,
 )
 from core.calculator import (
     calculate_balance,
@@ -77,52 +78,74 @@ def build_ui(root, data, save_data):
     summary = tk.LabelFrame(main, text="Ringkasan", padx=10, pady=10)
     summary.pack(fill="x", pady=5)
 
-    balance_label = tk.Label(summary, font=("Arial", 10, "bold"))
+    summary.columnconfigure(0, weight=1)
+    summary.columnconfigure(1, weight=1)
+
+    # ===== LEFT COLUMN =====
+    left = tk.Frame(summary)
+    left.grid(row=0, column=0, sticky="nw")
+
+    balance_label = tk.Label(left, font=("Arial", 10, "bold"))
     balance_label.pack(anchor="w")
 
+    filter_frame = tk.Frame(left)
+    filter_frame.pack(anchor="w", pady=5)
+
     tk.OptionMenu(
-        summary, month_var, *[str(i) for i in range(1, 13)],
+        filter_frame, month_var, *[str(i) for i in range(1, 13)],
         command=lambda _: update_summary()
     ).pack(side="left")
 
     tk.OptionMenu(
-        summary, year_var, *[str(y) for y in range(2023, datetime.now().year + 1)],
+        filter_frame, year_var, *[str(y) for y in range(2023, datetime.now().year + 1)],
         command=lambda _: update_summary()
     ).pack(side="left", padx=5)
 
-    monthly_income_label = tk.Label(summary)
+    monthly_income_label = tk.Label(left)
     monthly_income_label.pack(anchor="w")
 
-    monthly_expense_label = tk.Label(summary)
+    monthly_expense_label = tk.Label(left)
     monthly_expense_label.pack(anchor="w")
 
-    monthly_balance_label = tk.Label(summary, font=("Arial", 9, "bold"))
-    monthly_balance_label.pack(anchor="w")
+    monthly_balance_label = tk.Label(left, font=("Arial", 9, "bold"))
+    monthly_balance_label.pack(anchor="w", pady=(0, 5))
 
-    tk.Label(summary, text="Per Kategori", font=("Arial", 9, "bold")).pack(anchor="w", pady=(8, 3))
-    category_frame = tk.Frame(summary)
-    category_frame.pack(fill="x")
+    # ===== RIGHT COLUMN =====
+    right = tk.Frame(summary)
+    right.grid(row=0, column=1, sticky="ne", padx=(20, 0))
+
+    tk.Label(right, text="Per Kategori", font=("Arial", 9, "bold")).pack(anchor="w")
+
+    category_frame = tk.Frame(right)
+    category_frame.pack(anchor="w", pady=3)
 
     # ===================== SUMMARY UPDATE =====================
     def update_summary():
         balance_label.config(text=f"Saldo: Rp {calculate_balance(data)}")
 
         m, y = int(month_var.get()), int(year_var.get())
-        inc, exp, bal = calculate_monthly_summary(data, m, y)
+        result = calculate_monthly_summary(data, m, y)
 
-        monthly_income_label.config(text=f"Pemasukan: Rp {inc}")
-        monthly_expense_label.config(text=f"Pengeluaran: Rp {exp}")
-        monthly_balance_label.config(text=f"Saldo Bulan Ini: Rp {bal}")
+        monthly_income_label.config(text=f"Pemasukan: Rp {result['income']}")
+        monthly_expense_label.config(text=f"Pengeluaran: Rp {result['expense']}")
+        monthly_balance_label.config(
+            text=f"Saldo Bulan Ini: Rp {result['balance']}"
+        )
 
         for w in category_frame.winfo_children():
             w.destroy()
 
-        summary_cat = calculate_category_summary(data)
+        summary_cat = calculate_category_summary(data, m, y)
+
         if not summary_cat:
             tk.Label(category_frame, text="Belum ada data").pack(anchor="w")
         else:
             for cat, total in summary_cat.items():
-                tk.Label(category_frame, text=f"{cat:<15} : Rp {total}").pack(anchor="w")
+                row = tk.Frame(category_frame)
+                row.pack(fill="x")
+
+                tk.Label(row, text=cat, width=14, anchor="w").pack(side="left")
+                tk.Label(row, text=f"Rp {total}", anchor="e").pack(side="right")
 
     # ===================== CONTEXT =====================
     ctx = {
@@ -145,6 +168,7 @@ def build_ui(root, data, save_data):
     tk.Button(btns, text="Update", command=lambda: update_transaction(ctx)).pack(side="left", padx=3)
     tk.Button(btns, text="Hapus", command=lambda: delete_transaction(ctx)).pack(side="left", padx=3)
     tk.Button(btns, text="Export CSV", command=lambda: export_csv(ctx)).pack(side="left", padx=3)
+    tk.Button(btns, text="Pie Chart", command=lambda: show_category_pie_chart(ctx)).pack(side="left", padx=3)
 
     search_entry.bind("<KeyRelease>", lambda e: refresh_list(ctx))
     filter_var.trace_add("write", lambda *_: refresh_list(ctx))
