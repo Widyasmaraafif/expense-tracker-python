@@ -13,10 +13,11 @@ Designed for Windows users.
 - Export transactions to CSV
 - Filter transactions (All / Income / Expense)
 - Search transactions
+- Add Category
 - Mothly Summary
 - Category Summary
-- Add Category
 - Display transaction list
+- Pie chart in every month
 - Automatic balance calculation
 - Local JSON storage (offline)
 - Desktop GUI (no browser required)

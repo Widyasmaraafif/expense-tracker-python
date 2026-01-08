@@ -118,6 +118,13 @@ def build_ui(root, data, save_data):
 
     category_frame = tk.Frame(right)
     category_frame.pack(anchor="w", pady=3)
+    # tombol pie chart di ringkasan
+    tk.Button(
+        right,
+        text="Lihat Pie Chart",
+        command=lambda: show_category_pie_chart(ctx)
+    ).pack(anchor="e", pady=(6, 0))
+
 
     # ===================== SUMMARY UPDATE =====================
     def update_summary():
@@ -159,6 +166,8 @@ def build_ui(root, data, save_data):
         "search_var": search_var,
         "filter_var": filter_var,
         "categories": CATEGORIES,
+        "month_var": month_var,
+        "year_var": year_var,
         "update_summary": update_summary,
     }
 
@@ -168,7 +177,6 @@ def build_ui(root, data, save_data):
     tk.Button(btns, text="Update", command=lambda: update_transaction(ctx)).pack(side="left", padx=3)
     tk.Button(btns, text="Hapus", command=lambda: delete_transaction(ctx)).pack(side="left", padx=3)
     tk.Button(btns, text="Export CSV", command=lambda: export_csv(ctx)).pack(side="left", padx=3)
-    tk.Button(btns, text="Pie Chart", command=lambda: show_category_pie_chart(ctx)).pack(side="left", padx=3)
 
     search_entry.bind("<KeyRelease>", lambda e: refresh_list(ctx))
     filter_var.trace_add("write", lambda *_: refresh_list(ctx))

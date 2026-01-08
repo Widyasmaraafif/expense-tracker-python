@@ -3,7 +3,18 @@ from datetime import datetime
 from tkinter import messagebox
 import matplotlib.pyplot as plt
 from core.calculator import calculate_category_summary
+from datetime import datetime
 
+DATE_FORMAT = "%Y-%m-%d %H:%M"
+
+CATEGORY_COLORS = {
+    "Food": "#FF9999",
+    "Transport": "#66B2FF",
+    "Shopping": "#FFCC99",
+    "Bills": "#C2C2F0",
+    "Entertainment": "#99FF99",
+    "Other": "#D3D3D3",
+}
 
 # ===================== STATE =====================
 
@@ -25,11 +36,16 @@ def refresh_list(ctx):
     listbox.delete(0, "end")
 
     keyword = search_var.get().lower()
-    filtered = data
+    month = int(ctx["month_var"].get())
+    year = int(ctx["year_var"].get())
+
+    filtered = filter_by_month(data, month, year)
 
     # filter type
     if filter_var.get() != "all":
         filtered = [t for t in filtered if t["type"] == filter_var.get()]
+
+    keyword = search_var.get().lower()
 
     # search
     if keyword:
@@ -152,19 +168,33 @@ def export_csv(ctx):
 
     messagebox.showinfo("Sukses", "Export CSV berhasil")
 
+def filter_by_month(data, month, year):
+    result = []
+    for t in data:
+        date = datetime.strptime(t["date"], DATE_FORMAT)
+        if date.month == month and date.year == year:
+            result.append(t)
+    return result
+
 def show_category_pie_chart(ctx):
     data = ctx["data"]
 
-    summary = calculate_category_summary(data)
+    month = int(ctx["month_var"].get())
+    year = int(ctx["year_var"].get())
+
+    summary = calculate_category_summary(data, month, year)
+
     if not summary:
-        messagebox.showinfo("Info", "Belum ada data pengeluaran")
+        messagebox.showinfo("Info", f"Belum ada data pengeluaran\n{month}/{year}")
         return
 
     labels = list(summary.keys())
     values = list(summary.values())
+    colors = [CATEGORY_COLORS.get(cat, "#CCCCCC") for cat in labels]
 
     plt.figure(figsize=(6, 6))
-    plt.pie(values, labels=labels, autopct="%1.1f%%", startangle=140)
-    plt.title("Pengeluaran per Kategori")
+    plt.pie(values, labels=labels, colors=colors, autopct=lambda p: f"{p:.1f}%\nRp {int(p/100*sum(values)):,}", startangle=140)
+    plt.title(f"Pengeluaran per Kategori\n{month}/{year}")
     plt.axis("equal")
+    plt.tight_layout()
     plt.show()

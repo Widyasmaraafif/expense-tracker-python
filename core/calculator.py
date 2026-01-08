@@ -51,6 +51,8 @@ def calculate_category_summary(data, month=None, year=None):
             continue
 
         date = parse_date(t["date"])
+        if not date:
+            continue
 
         if month and year:
             if date.month != month or date.year != year:
