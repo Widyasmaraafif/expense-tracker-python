@@ -1,5 +1,6 @@
 import tkinter as tk
 from datetime import datetime
+from core.utils import format_rupiah
 
 from ui.actions import (
     refresh_list,
@@ -119,24 +120,20 @@ def build_ui(root, data, save_data):
     category_frame = tk.Frame(right)
     category_frame.pack(anchor="w", pady=3)
     # tombol pie chart di ringkasan
-    tk.Button(
-        right,
-        text="Lihat Pie Chart",
-        command=lambda: show_category_pie_chart(ctx)
-    ).pack(anchor="e", pady=(6, 0))
-
+    pie_button = tk.Button(right, text="Lihat Pie Chart")
+    pie_button.pack(anchor="e", pady=(6, 0))
 
     # ===================== SUMMARY UPDATE =====================
     def update_summary():
-        balance_label.config(text=f"Saldo: Rp {calculate_balance(data)}")
+        balance_label.config(text=f"Saldo: Rp {format_rupiah(calculate_balance(data))}")
 
         m, y = int(month_var.get()), int(year_var.get())
         result = calculate_monthly_summary(data, m, y)
 
-        monthly_income_label.config(text=f"Pemasukan: Rp {result['income']}")
-        monthly_expense_label.config(text=f"Pengeluaran: Rp {result['expense']}")
+        monthly_income_label.config(text=f"Pemasukan: Rp {format_rupiah(result['income'])}")
+        monthly_expense_label.config(text=f"Pengeluaran: Rp {format_rupiah(result['expense'])}")
         monthly_balance_label.config(
-            text=f"Saldo Bulan Ini: Rp {result['balance']}"
+            text=f"Saldo Bulan Ini: Rp {format_rupiah(result['balance'])}"
         )
 
         for w in category_frame.winfo_children():
@@ -152,7 +149,7 @@ def build_ui(root, data, save_data):
                 row.pack(fill="x")
 
                 tk.Label(row, text=cat, width=14, anchor="w").pack(side="left")
-                tk.Label(row, text=f"Rp {total}", anchor="e").pack(side="right")
+                tk.Label(row, text=format_rupiah(total), anchor="e").pack(side="right")
 
     # ===================== CONTEXT =====================
     ctx = {
@@ -170,6 +167,10 @@ def build_ui(root, data, save_data):
         "year_var": year_var,
         "update_summary": update_summary,
     }
+
+    pie_button.config(
+        command=lambda: show_category_pie_chart(ctx)
+    )
 
     # ===================== BUTTON WIRING =====================
     tk.Button(btns, text="Tambah", command=lambda: add_transaction(ctx)).pack(side="left", padx=3)
